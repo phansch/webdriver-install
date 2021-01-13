@@ -10,3 +10,5 @@ Fast and simple webdriver installation
 * Provide a library API that can be used to install webdrivers in your Rust
   application or tests
 * Support for `chromedriver`, `geckodriver`, `edgedriver`, `iedriver`
+
+Inspired by [titusfortner/webdrivers](https://github.com/titusfortner/webdrivers/) which is written in Ruby.
