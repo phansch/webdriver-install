@@ -1,4 +1,4 @@
-use eyre::Result;
+use eyre::{eyre, Result};
 use webdriver_install::DriverFetcher;
 
 pub struct Geckodriver;
@@ -8,16 +8,47 @@ impl DriverFetcher for Geckodriver {
 
     /// Returns the latest version of the driver
     /// (Does not download the driver)
-    fn latest_version() -> Result<String> {
+    fn latest_version(&self) -> Result<String> {
         let latest_release_url = format!("{}/latest", Self::BASE_URL);
         let resp = reqwest::blocking::get(&latest_release_url)?;
         let url = resp.url();
         Ok(url.path_segments().unwrap().last().unwrap().to_string())
     }
+
+    fn direct_download_url(&self, version: &str) -> Result<String> {
+        Ok(
+            format!(
+                "{}/download/{version}/geckodriver-{version}-{platform}",
+                Self::BASE_URL,
+                version=version,
+                platform=Self::platform()?
+            )
+        )
+    }
 }
 
 impl Geckodriver {
-    // fn newest_point_release(version: &str) -> Result<String> {
-    //     Ok(reqwest::blocking::get(BASE_URL)?.text()?)
-    // }
+    pub fn new() -> Self {
+        Geckodriver {}
+    }
+
+    pub fn platform() -> Result<String> {
+        match sys_info::os_type()?.as_str() {
+            "Linux" => Ok(format!("linux{}.tar.gz", Self::pointer_width())),
+            "Darwin" => Ok(String::from("macos.tar.gz")),
+            "Windows" => Ok(format!("win{}.zip", Self::pointer_width())),
+            other => Err(eyre!("webdriver-install doesn't support '{}' currently", other))
+        }
+    }
+
+    pub const fn pointer_width() -> usize {
+        #[cfg(target_pointer_width = "32")]
+        {
+            32
+        }
+        #[cfg(target_pointer_width = "64")]
+        {
+            64
+        }
+    }
 }
