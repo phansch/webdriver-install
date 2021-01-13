@@ -1,4 +1,5 @@
 use eyre::{eyre, Result};
+use url::Url;
 use webdriver_install::DriverFetcher;
 
 pub struct Geckodriver;
@@ -15,14 +16,14 @@ impl DriverFetcher for Geckodriver {
         Ok(url.path_segments().unwrap().last().unwrap().to_string())
     }
 
-    fn direct_download_url(&self, version: &str) -> Result<String> {
+    fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(
-            format!(
+            Url::parse(&format!(
                 "{}/download/{version}/geckodriver-{version}-{platform}",
                 Self::BASE_URL,
                 version=version,
                 platform=Self::platform()?
-            )
+            ))?
         )
     }
 }

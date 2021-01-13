@@ -5,7 +5,11 @@ name = "webdriver-install"
 version = "0.1.0"
 [dependencies]
 eyre = "*"
+flate2 = "*"
 sys-info = "*"
+tar = "*"
+tempfile = "*"
+url = "2.2"
 
 [dependencies.reqwest]
 features = ["blocking"]
