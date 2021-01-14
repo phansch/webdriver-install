@@ -17,20 +17,18 @@ impl DriverFetcher for Geckodriver {
     }
 
     fn direct_download_url(&self, version: &str) -> Result<Url> {
-        Ok(
-            Url::parse(&format!(
-                "{}/download/{version}/geckodriver-{version}-{platform}",
-                Self::BASE_URL,
-                version=version,
-                platform=Self::platform()?
-            ))?
-        )
+        Ok(Url::parse(&format!(
+            "{}/download/{version}/geckodriver-{version}-{platform}",
+            Self::BASE_URL,
+            version = version,
+            platform = Self::platform()?
+        ))?)
     }
 }
 
 impl Geckodriver {
     pub fn new() -> Self {
-        Geckodriver {}
+        Self {}
     }
 
     fn platform() -> Result<String> {
@@ -38,7 +36,10 @@ impl Geckodriver {
             "Linux" => Ok(format!("linux{}.tar.gz", Self::pointer_width())),
             "Darwin" => Ok(String::from("macos.tar.gz")),
             "Windows" => Ok(format!("win{}.zip", Self::pointer_width())),
-            other => Err(eyre!("webdriver-install doesn't support '{}' currently", other))
+            other => Err(eyre!(
+                "webdriver-install doesn't support '{}' currently",
+                other
+            )),
         }
     }
 
@@ -59,13 +60,25 @@ fn direct_download_url_test() {
     #[cfg(target_os = "linux")]
     assert_eq!(
         "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-linux64.tar.gz",
-        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
+        Geckodriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
+    );
     #[cfg(target_os = "macos")]
     assert_eq!(
         "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-macos.tar.gz",
-        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
+        Geckodriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
+    );
     #[cfg(target_os = "windows")]
     assert_eq!(
         "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-win.zip",
-        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
+        Geckodriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
+    );
 }
