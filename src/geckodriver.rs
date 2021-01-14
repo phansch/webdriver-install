@@ -33,7 +33,7 @@ impl Geckodriver {
         Geckodriver {}
     }
 
-    pub fn platform() -> Result<String> {
+    fn platform() -> Result<String> {
         match sys_info::os_type()?.as_str() {
             "Linux" => Ok(format!("linux{}.tar.gz", Self::pointer_width())),
             "Darwin" => Ok(String::from("macos.tar.gz")),
@@ -42,7 +42,7 @@ impl Geckodriver {
         }
     }
 
-    pub const fn pointer_width() -> usize {
+    const fn pointer_width() -> usize {
         #[cfg(target_pointer_width = "32")]
         {
             32
@@ -52,4 +52,20 @@ impl Geckodriver {
             64
         }
     }
+}
+
+#[test]
+fn direct_download_url_test() {
+    #[cfg(target_os = "linux")]
+    assert_eq!(
+        "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-linux64.tar.gz",
+        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
+    #[cfg(target_os = "macos")]
+    assert_eq!(
+        "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-macos.tar.gz",
+        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
+    #[cfg(target_os = "windows")]
+    assert_eq!(
+        "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-win.zip",
+        Geckodriver::new().direct_download_url("v1").unwrap().to_string());
 }
