@@ -7,7 +7,7 @@ use regex::Regex;
 use tracing::debug;
 use url::Url;
 
-use webdriver_install::DriverFetcher;
+use crate::DriverFetcher;
 
 use std::path::PathBuf;
 use std::process::{Command, Stdio};

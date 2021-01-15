@@ -1,6 +1,10 @@
 use eyre::Result;
 use url::Url;
 
+pub mod chromedriver;
+pub mod geckodriver;
+pub mod installer;
+
 pub trait DriverFetcher {
     const BASE_URL: &'static str;
 
