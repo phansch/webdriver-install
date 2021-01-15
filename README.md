@@ -1,6 +1,8 @@
 # webdriver-install
 
 [![Rust](https://github.com/phansch/webdriver-install/workflows/Rust/badge.svg)](https://github.com/phansch/webdriver-install/actions)
+[![Sponsor
+count](https://img.shields.io/badge/sponsors-4-brightgreen)](https://phansch.net/thanks)
 
 Fast and simple webdriver installation
 
