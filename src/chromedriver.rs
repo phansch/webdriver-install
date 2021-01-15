@@ -19,12 +19,10 @@ impl DriverFetcher for Chromedriver {
 
     /// Returns the latest version of the driver
     fn latest_version(&self) -> Result<String> {
-        // TODO:
-        //
-        // 1. x Figure out the current Chrome version
-        // 2. Download and read the LATEST_RELEASE_<chrome_build_version> file
-        // 3. Done?
-        Ok("TODO".into())
+        let latest_release_url = format!("{}/LATEST_RELEASE_{}", Self::BASE_URL, Version::find()?.build_version());
+        debug!("latest_release_url: {}", latest_release_url);
+        let resp = reqwest::blocking::get(&latest_release_url)?;
+        Ok(resp.text()?)
     }
 
     /// Returns the download url for the driver executable
