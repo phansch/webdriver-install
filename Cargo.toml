@@ -3,6 +3,15 @@ authors = ["Philipp Hansch <dev@phansch.net>"]
 edition = "2018"
 name = "webdriver-install"
 version = "0.1.0"
+
+[lib]
+name = "webdriver_install"
+path = "src/lib.rs"
+
+[[bin]]
+name = "webdriver_install"
+path = "src/main.rs"
+
 [dependencies]
 dirs = "*"
 eyre = "*"
