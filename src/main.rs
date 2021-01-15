@@ -6,20 +6,25 @@ use dirs::home_dir;
 use eyre::Result;
 use flate2::read::GzDecoder;
 use tar::Archive;
+use tracing::info;
+use tracing_subscriber;
 use url::Url;
 
 use std::path::PathBuf;
 
 fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
+
     // let version = geckodriver::Geckodriver::new().latest_version()?;
     // let download_url = geckodriver::Geckodriver::new().direct_download_url(&version)?;
     // println!("point release: {}", version);
     // println!("direct_download_url: {}", &download_url);
 
     // let _unarchived_file_path = install(download_url)?;
-    if let Err(e) = chromedriver::ChromeLocation::location() {
-        println!("Error: {:#}", e);
-    };
+    match chromedriver::ChromeLocation::location() {
+        Ok(loc) => println!("Chrome found: {:?}", loc),
+        Err(e) => println!("Error: {:#}", e)
+    }
 
     Ok(())
 }
