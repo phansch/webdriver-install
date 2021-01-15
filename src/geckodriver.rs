@@ -8,7 +8,6 @@ impl DriverFetcher for Geckodriver {
     const BASE_URL: &'static str = "https://github.com/mozilla/geckodriver/releases";
 
     /// Returns the latest version of the driver
-    /// (Does not download the driver)
     fn latest_version(&self) -> Result<String> {
         let latest_release_url = format!("{}/latest", Self::BASE_URL);
         let resp = reqwest::blocking::get(&latest_release_url)?;
@@ -16,6 +15,7 @@ impl DriverFetcher for Geckodriver {
         Ok(url.path_segments().unwrap().last().unwrap().to_string())
     }
 
+    /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(Url::parse(&format!(
             "{}/download/{version}/geckodriver-{version}-{platform}",

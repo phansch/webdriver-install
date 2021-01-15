@@ -1,7 +1,12 @@
+/// This module manages version selection of the `chromedriver`,
+/// based on the installed browser version.
+///
+/// See https://chromedriver.chromium.org/downloads/version-selection
 use eyre::{ensure, eyre, Result};
 use regex::Regex;
 use tracing::debug;
 use url::Url;
+
 use webdriver_install::DriverFetcher;
 
 use std::path::PathBuf;
@@ -12,15 +17,17 @@ pub struct Chromedriver;
 impl DriverFetcher for Chromedriver {
     const BASE_URL: &'static str = "https://chromedriver.storage.googleapis.com";
 
+    /// Returns the latest version of the driver
     fn latest_version(&self) -> Result<String> {
         // TODO:
         //
-        // 1. Figure out the current Chrome version
+        // 1. x Figure out the current Chrome version
         // 2. Download and read the LATEST_RELEASE_<chrome_build_version> file
         // 3. Done?
         Ok("TODO".into())
     }
 
+    /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(Url::parse(&format!(
             "{}/{version}/chromedriver_{platform}.zip",
@@ -36,8 +43,23 @@ impl Chromedriver {
         Self {}
     }
 
+    /// Returns the platform part to be used in the download URL
+    ///
+    /// The `match` is based on the file contents of, for example
+    /// https://chromedriver.storage.googleapis.com/index.html?path=72.0.3626.69/
+    ///
+    /// If future chromedriver releases have multiple pointer widths per platform,
+    /// we have to change this to work like `Geckodriver::platform`.
     fn platform() -> Result<String> {
-        Ok("".into())
+        match sys_info::os_type()?.as_str() {
+            "Linux" => Ok(String::from("linux64.zip")),
+            "Darwin" => Ok(String::from("mac64.zip")),
+            "Windows" => Ok(String::from("win32.zip")),
+            other => Err(eyre!(
+                "webdriver-install doesn't support '{}' currently",
+                other
+            )),
+        }
     }
 }
 
