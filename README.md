@@ -1,6 +1,7 @@
 # webdriver-install
 
 [![Rust](https://github.com/phansch/webdriver-install/workflows/Rust/badge.svg)](https://github.com/phansch/webdriver-install/actions)
+
 Fast and simple webdriver installation
 
 **This is still a work in progress and not usable, yet**
