@@ -2,12 +2,22 @@ use dirs::home_dir;
 use eyre::Result;
 use flate2::read::GzDecoder;
 use tar::Archive;
-use url::Url;
+use crate::{chromedriver::Chromedriver, geckodriver::Geckodriver, Driver, DriverFetcher};
 
 use std::path::PathBuf;
 
-// Downloads, unarchives and moves the driver executable to $HOME
-pub fn install(download_url: Url) -> Result<PathBuf> {
+/// Downloads, unarchives and moves the driver executable to $HOME
+pub fn install_latest(driver: Driver) -> Result<PathBuf> {
+    let download_url = match driver {
+        Driver::Gecko => {
+            let version = Geckodriver::new().latest_version()?;
+            Geckodriver::new().direct_download_url(&version)?
+        }
+        Driver::Chrome => {
+            let version = Geckodriver::new().latest_version()?;
+            Chromedriver::new().direct_download_url(&version)?
+        }
+    };
     let resp = reqwest::blocking::get(download_url.clone())?;
     let content = &resp.bytes()?;
 
