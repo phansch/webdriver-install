@@ -7,9 +7,12 @@ version = "0.1.0"
 dirs = "*"
 eyre = "*"
 flate2 = "*"
+regex = "*"
 sys-info = "*"
 tar = "*"
 tempfile = "*"
+tracing = "0.1"
+tracing-subscriber = "0.2"
 url = "2.2"
 
 [dependencies.reqwest]

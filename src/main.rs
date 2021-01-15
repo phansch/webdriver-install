@@ -1,21 +1,28 @@
+mod chromedriver;
 mod geckodriver;
-use webdriver_install::DriverFetcher;
-use tar::Archive;
-use flate2::read::GzDecoder;
-use url::Url;
+
 use dirs::home_dir;
+use eyre::Result;
+use flate2::read::GzDecoder;
+use tar::Archive;
+use tracing_subscriber;
+use url::Url;
+
 use std::path::PathBuf;
 
-use eyre::Result;
-
 fn main() -> Result<()> {
-    let version = geckodriver::Geckodriver::new().latest_version()?;
-    let download_url = geckodriver::Geckodriver::new().direct_download_url(&version)?;
-    println!("point release: {}", version);
-    println!("direct_download_url: {}", &download_url);
+    tracing_subscriber::fmt::init();
 
-    // NOTE: when tmp_dir goes out of scope, the directory will be removed automatically
-    let _unarchived_file_path = install(download_url)?;
+    // let version = geckodriver::Geckodriver::new().latest_version()?;
+    // let download_url = geckodriver::Geckodriver::new().direct_download_url(&version)?;
+    // println!("point release: {}", version);
+    // println!("direct_download_url: {}", &download_url);
+
+    // let _unarchived_file_path = install(download_url)?;
+    match chromedriver::Version::find() {
+        Ok(loc) => println!("Chrome found: {:?}", loc.build_version()),
+        Err(e) => println!("Error: {:#}", e),
+    }
 
     Ok(())
 }
@@ -56,9 +63,8 @@ fn decompress(filename: &str, bytes: &[u8], target_dir: PathBuf) -> Result<PathB
                 let final_path = target_dir.join(exec.path()?);
                 exec.unpack(final_path)?;
             }
-
         }
-        ext => panic!("No support for unarchiving {}, yet", ext)
+        ext => panic!("No support for unarchiving {}, yet", ext),
     }
     Ok(target_dir)
 }
