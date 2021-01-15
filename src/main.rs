@@ -1,12 +1,10 @@
 mod chromedriver;
 mod geckodriver;
-use webdriver_install::DriverFetcher;
 
 use dirs::home_dir;
 use eyre::Result;
 use flate2::read::GzDecoder;
 use tar::Archive;
-use tracing::info;
 use tracing_subscriber;
 use url::Url;
 
@@ -21,9 +19,9 @@ fn main() -> Result<()> {
     // println!("direct_download_url: {}", &download_url);
 
     // let _unarchived_file_path = install(download_url)?;
-    match chromedriver::ChromeLocation::location() {
-        Ok(loc) => println!("Chrome found: {:?}", loc),
-        Err(e) => println!("Error: {:#}", e)
+    match chromedriver::Version::find() {
+        Ok(loc) => println!("Chrome found: {:?}", loc.build_version()),
+        Err(e) => println!("Error: {:#}", e),
     }
 
     Ok(())
