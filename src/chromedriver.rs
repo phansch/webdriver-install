@@ -19,7 +19,11 @@ impl DriverFetcher for Chromedriver {
 
     /// Returns the latest version of the driver
     fn latest_version(&self) -> Result<String> {
-        let latest_release_url = format!("{}/LATEST_RELEASE_{}", Self::BASE_URL, Version::find()?.build_version());
+        let latest_release_url = format!(
+            "{}/LATEST_RELEASE_{}",
+            Self::BASE_URL,
+            Version::find()?.build_version()
+        );
         debug!("latest_release_url: {}", latest_release_url);
         let resp = reqwest::blocking::get(&latest_release_url)?;
         Ok(resp.text()?)
@@ -121,7 +125,10 @@ impl Version {
         let version_pattern = Regex::new(r"\d+\.\d+\.\d+\.\d+")?;
         let version = version_pattern
             .captures(&output)
-            .ok_or(eyre!("regex: Could not find 4-part Chrome version string in '{}'", output))?
+            .ok_or(eyre!(
+                "regex: Could not find 4-part Chrome version string in '{}'",
+                output
+            ))?
             .get(0)
             .map_or("", |m| m.as_str());
         let parts: Vec<i16> = version
@@ -182,13 +189,13 @@ fn version_from_output_test() {
 }
 
 #[test]
-#[should_panic(expected="Could not find 4-part Chrome version string in 'a.0.0.1'")]
+#[should_panic(expected = "Could not find 4-part Chrome version string in 'a.0.0.1'")]
 fn version_from_output_panic_test() {
     Version::version_from_output("a.0.0.1").unwrap();
 }
 
 #[test]
-#[should_panic(expected="Could not find 4-part Chrome version string in 'abc 1.0.1 def'")]
+#[should_panic(expected = "Could not find 4-part Chrome version string in 'abc 1.0.1 def'")]
 fn version_from_output_panic_not_4_parts_test() {
     Version::version_from_output("abc 1.0.1 def").unwrap();
 }

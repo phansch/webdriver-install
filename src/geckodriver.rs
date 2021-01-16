@@ -1,6 +1,6 @@
+use crate::DriverFetcher;
 use eyre::{eyre, Result};
 use url::Url;
-use crate::DriverFetcher;
 
 pub struct Geckodriver;
 
