@@ -28,7 +28,7 @@ impl DriverFetcher for Chromedriver {
     /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(Url::parse(&format!(
-            "{}/{version}/chromedriver_{platform}.zip",
+            "{}/{version}/chromedriver_{platform}",
             Self::BASE_URL,
             version = version,
             platform = Self::platform()?
