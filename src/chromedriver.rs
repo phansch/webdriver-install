@@ -2,7 +2,7 @@
 /// based on the installed browser version.
 ///
 /// See https://chromedriver.chromium.org/downloads/version-selection
-use eyre::{ensure, eyre, Result};
+use eyre::{eyre, Result};
 use regex::Regex;
 use tracing::debug;
 use url::Url;
@@ -28,7 +28,7 @@ impl DriverFetcher for Chromedriver {
     /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(Url::parse(&format!(
-            "{}/{version}/chromedriver_{platform}.zip",
+            "{}/{version}/chromedriver_{platform}",
             Self::BASE_URL,
             version = version,
             platform = Self::platform()?
@@ -121,20 +121,13 @@ impl Version {
         let version_pattern = Regex::new(r"\d+\.\d+\.\d+\.\d+")?;
         let version = version_pattern
             .captures(&output)
-            .ok_or(eyre!("regex: Could not match Chrome version string"))?
+            .ok_or(eyre!("regex: Could not find 4-part Chrome version string in '{}'", output))?
             .get(0)
             .map_or("", |m| m.as_str());
         let parts: Vec<i16> = version
             .split(".")
             .map(|i| i.parse::<i16>().unwrap())
             .collect();
-
-        ensure!(
-            parts.len() == 4,
-            "Expected Chrome version to have 4 parts, but had {}: {}",
-            parts.len(),
-            version
-        );
 
         Ok(Self {
             major: parts[0],
@@ -189,15 +182,41 @@ fn version_from_output_test() {
 }
 
 #[test]
-#[should_panic]
+#[should_panic(expected="Could not find 4-part Chrome version string in 'a.0.0.1'")]
 fn version_from_output_panic_test() {
+    Version::version_from_output("a.0.0.1").unwrap();
+}
+
+#[test]
+#[should_panic(expected="Could not find 4-part Chrome version string in 'abc 1.0.1 def'")]
+fn version_from_output_panic_not_4_parts_test() {
+    Version::version_from_output("abc 1.0.1 def").unwrap();
+}
+
+#[test]
+fn direct_download_url_test() {
+    #[cfg(target_os = "linux")]
     assert_eq!(
-        Version::version_from_output("a.0.0.1").unwrap(),
-        Version {
-            major: 127,
-            minor: 0,
-            build: 0,
-            patch: 1
-        }
+        "https://chromedriver.storage.googleapis.com/v1/chromedriver_linux64.zip",
+        Chromedriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
+    );
+    #[cfg(target_os = "macos")]
+    assert_eq!(
+        "https://chromedriver.storage.googleapis.com/v1/chromedriver_mac64.zip",
+        Chromedriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
+    );
+    #[cfg(target_os = "windows")]
+    assert_eq!(
+        "https://chromedriver.storage.googleapis.com/v1/chromedriver_win32.zip",
+        Chromedriver::new()
+            .direct_download_url("v1")
+            .unwrap()
+            .to_string()
     );
 }
