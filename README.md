@@ -24,7 +24,8 @@ Usability:
  * ⬜ Removal of installed drivers
  * ⬜ Published on crates.io
  * ⬜ Published library docs
- * ⬜ Windows support
+ * ✅ Windows support
+ * ⬜ MacOS support
  * ⬜ WSL support
  * ⬜ Pre-built binaries
  * ⬜ Stable library API
