@@ -14,6 +14,9 @@ Driver installation support:
  * ✅ `geckodriver`
  * ⬜ `edgedriver`
  * ⬜ `iedriver`
+ * ⬜ `safaridriver`
+      Safaridriver comes pre-installed on all MacOS systems, but we can at least
+      provide the binary location.
 
 Usability:
 
