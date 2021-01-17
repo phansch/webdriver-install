@@ -75,7 +75,7 @@ fn direct_download_url_test() {
     );
     #[cfg(target_os = "windows")]
     assert_eq!(
-        "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-win.zip",
+        "https://github.com/mozilla/geckodriver/releases/download/v1/geckodriver-v1-win64.zip",
         Geckodriver::new()
             .direct_download_url("v1")
             .unwrap()
