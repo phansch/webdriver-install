@@ -6,13 +6,31 @@ count](https://img.shields.io/badge/sponsors-4-brightgreen)](https://phansch.net
 
 Fast and simple webdriver installation
 
-**This is still a work in progress and not usable, yet**
+## Implementation state
 
-## Goals
+Driver installation support:
 
-* Provide a command line tool that manages webdriver installation and updating
-* Provide a library API that can be used to install webdrivers in your Rust
-  application or tests
-* Support for `chromedriver`, `geckodriver`, `edgedriver`, `iedriver`
+ * ✅ `chromedriver`
+ * ✅ `geckodriver`
+ * ⬜ `edgedriver`
+ * ⬜ `iedriver`
 
-Inspired by [titusfortner/webdrivers](https://github.com/titusfortner/webdrivers/) which is written in Ruby.
+Usability:
+
+ * ⬜ README instructions
+      Will be available once the API has settled
+ * ⬜ Command line interface
+ * ⬜ Updating of installed drivers
+ * ⬜ Removal of installed drivers
+ * ⬜ Published on crates.io
+ * ⬜ Published library docs
+ * ⬜ Windows support
+ * ⬜ WSL support
+ * ⬜ Pre-built binaries
+ * ⬜ Stable library API
+      Current API surface is still subject to change
+
+Inspired by:
+
+ * [titusfortner/webdrivers](https://github.com/titusfortner/webdrivers/) which is written in Ruby.
+ * `wasm-pack`'s '[internal test helpes](https://github.com/rustwasm/wasm-pack/tree/master/src/test/webdriver?rgh-link-date=2021-01-14T06%3A59%3A33Z)
