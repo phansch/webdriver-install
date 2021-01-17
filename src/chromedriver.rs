@@ -101,6 +101,8 @@ impl Version {
         return Self::linux_version();
         #[cfg(target_os = "windows")]
         return Self::windows_version();
+        #[cfg(target_os = "macos")]
+        unimplemented!();
     }
 
     /// Returns major.minor.build.patch
@@ -177,6 +179,8 @@ impl Location {
         return Self::linux_location();
         #[cfg(target_os = "windows")]
         return Self::windows_location();
+        #[cfg(target_os = "macos")]
+        unimplemented!();
     }
 
     #[cfg(target_os = "linux")]
