@@ -75,6 +75,7 @@ pub struct Version {
 
 struct Location {}
 
+#[cfg(target_os = "linux")]
 static LINUX_CHROME_DIRS: &[&'static str] = &[
     "/usr/local/sbin",
     "/usr/local/bin",
@@ -84,14 +85,22 @@ static LINUX_CHROME_DIRS: &[&'static str] = &[
     "/bin",
     "/opt/google/chrome",
 ];
+#[cfg(target_os = "linux")]
 static LINUX_CHROME_FILES: &[&'static str] =
     &["google-chrome", "chrome", "chromium", "chromium-browser"];
+
+#[cfg(target_os = "windows")]
+static WIN_CHROME_DIRS: &[&'static str] = &["\\Google\\Chrome\\Application", "\\Chromium\\Application"];
+#[cfg(target_os = "windows")]
+static WIN_CHROME_ROOTS: &[&'static str] = &["LOCALAPPDATA", "PROGRAMFILES"];
 
 impl Version {
     /// Returns the version of the currently installed Chrome/Chromium browser
     pub fn find() -> Result<Self> {
         #[cfg(target_os = "linux")]
-        Self::linux_version()
+        return Self::linux_version();
+        #[cfg(target_os = "windows")]
+        return Self::windows_version();
     }
 
     /// Returns major.minor.build.patch
@@ -107,6 +116,7 @@ impl Version {
         format!("{}.{}.{}", self.major, self.minor, self.build)
     }
 
+    #[cfg(target_os = "linux")]
     fn linux_version() -> Result<Self> {
         // TODO: WSL?
         let output = Command::new(Location::location()?)
@@ -117,6 +127,21 @@ impl Version {
 
         let output = String::from_utf8(output)?;
         debug!("Chrome --version output: {}", output);
+
+        Ok(Self::version_from_output(&output)?)
+    }
+
+    #[cfg(target_os = "windows")]
+    fn windows_version() -> Result<Self> {
+        let output = Command::new("pwsh.exe")
+            .arg("--command")
+            .arg(format!("(Get-ItemProperty '{}').VersionInfo.ProductVersion", Location::location()?.display()))
+            .stdout(Stdio::piped())
+            .output()?
+            .stdout;
+
+        let output = String::from_utf8(output)?;
+        debug!("chrome version: {}", output);
 
         Ok(Self::version_from_output(&output)?)
     }
@@ -149,14 +174,30 @@ impl Location {
     /// Returns the location of the currently installed Chrome/Chromium browser
     pub fn location() -> Result<PathBuf> {
         #[cfg(target_os = "linux")]
-        Self::linux_location()
+        return Self::linux_location();
+        #[cfg(target_os = "windows")]
+        return Self::windows_location();
     }
 
+    #[cfg(target_os = "linux")]
     fn linux_location() -> Result<PathBuf> {
         // TODO: WSL?
         for dir in LINUX_CHROME_DIRS.into_iter().map(PathBuf::from) {
             for file in LINUX_CHROME_FILES {
                 let path = dir.join(file);
+                if path.exists() {
+                    return Ok(path);
+                }
+            }
+        }
+        Err(eyre!("Unable to find chrome executable"))
+    }
+
+    #[cfg(target_os = "windows")]
+    fn windows_location() -> Result<PathBuf> {
+        for dir in WIN_CHROME_DIRS.into_iter().map(PathBuf::from) {
+            for root in WIN_CHROME_ROOTS.into_iter().map(PathBuf::from) {
+                let path = root.join(&dir).join("chrome.exe");
                 if path.exists() {
                     return Ok(path);
                 }
