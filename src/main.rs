@@ -14,8 +14,7 @@ fn main() -> Result<()> {
 
     println!("{}", chromedriver::Chromedriver::new().latest_version()?);
 
-    installer::install_latest(Driver::Chrome)?;
+    installer::install(Driver::Chrome)?;
 
     Ok(())
 }
-

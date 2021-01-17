@@ -1,18 +1,27 @@
+use crate::{chromedriver::Chromedriver, geckodriver::Geckodriver, Driver, DriverFetcher};
 use dirs::home_dir;
-use eyre::{eyre, Result};
+use eyre::{ensure, eyre, Result};
 use flate2::read::GzDecoder;
 use tar::Archive;
-use crate::{chromedriver::Chromedriver, geckodriver::Geckodriver, Driver, DriverFetcher};
 use tracing::debug;
 
-use std::io::{Cursor, Read};
 use std::fs::File;
+use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
 static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver"];
 
 /// Downloads and unarchives the driver executable to $HOME/.webdrivers
-pub fn install_latest(driver: Driver) -> Result<PathBuf> {
+pub fn install(driver: Driver) -> Result<PathBuf> {
+    let target_dir = home_dir().unwrap().join(".webdrivers");
+    std::fs::create_dir_all(&target_dir)?;
+    install_into(driver, target_dir)
+}
+
+/// Downloads and unarchives the driver executable into the specified `target_dir`
+pub fn install_into(driver: Driver, target_dir: PathBuf) -> Result<PathBuf> {
+    ensure!(target_dir.is_dir(), "`target_dir` must be a directory.");
+
     let download_url = match driver {
         Driver::Gecko => {
             let version = Geckodriver::new().latest_version()?;
@@ -32,13 +41,18 @@ pub fn install_latest(driver: Driver) -> Result<PathBuf> {
         .and_then(|name| if name.is_empty() { None } else { Some(name) })
         .unwrap_or("tmp.bin");
 
-    let target_dir = home_dir().unwrap().join(".webdrivers");
-    std::fs::create_dir_all(&target_dir)?;
+    let executable_path = decompress(archive_filename, archive_content, target_dir.clone())?;
 
-    decompress(archive_filename, archive_content, target_dir.clone())?;
+    // Make sure the extracted file will be executable
+    #[cfg(target_os = "linux")]
+    {
+        use std::fs;
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(&executable_path, fs::Permissions::from_mode(0o775)).unwrap();
+    }
 
-    debug!("stored in {:?}", target_dir);
-    Ok(target_dir)
+    debug!("stored at {:?}", executable_path);
+    Ok(executable_path)
 }
 
 fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Result<PathBuf> {
@@ -55,7 +69,9 @@ fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Resu
 
             for mut exec in driver_executable {
                 let final_path = target_dir.join(exec.path()?);
-                exec.unpack(final_path)?;
+                exec.unpack(&final_path)?;
+
+                return Ok(final_path);
             }
         }
         name if name.ends_with("zip") => {
@@ -74,12 +90,15 @@ fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Resu
             }
             if let Some(name) = filename {
                 debug!("saving zip file: {}", name);
-                let mut f = File::create(target_dir.join(name))?;
+                let executable_path = target_dir.join(name);
+                let mut f = File::create(&executable_path)?;
                 std::io::copy(&mut zip_bytes.as_slice(), &mut f)?;
+
+                return Ok(executable_path);
             }
         }
 
         ext => return Err(eyre!("No support for unarchiving {}, yet", ext)),
     }
-    Ok(target_dir)
+    Err(eyre!("This installer code should be unreachable!"))
 }

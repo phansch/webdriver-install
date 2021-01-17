@@ -1,5 +1,5 @@
 use webdriver_install::Driver;
 
 fn main() {
-    webdriver_install::install_latest(Driver::Gecko).unwrap();
+    webdriver_install::install(Driver::Gecko).unwrap();
 }
