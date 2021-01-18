@@ -21,8 +21,10 @@ Driver installation support:
 
 Usability:
 
- * ⬜ README instructions
+ * ⬜ README instructions  
       Will be available once the API has settled
+ * ⬜ Stable library API  
+      Current API surface is still subject to change
  * ⬜ Command line interface
  * ⬜ Updating of installed drivers
  * ⬜ Removal of installed drivers
@@ -32,8 +34,6 @@ Usability:
  * ⬜ MacOS support
  * ⬜ WSL support
  * ⬜ Pre-built binaries
- * ⬜ Stable library API
-      Current API surface is still subject to change
 
 Inspired by:
 
