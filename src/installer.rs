@@ -44,7 +44,7 @@ pub fn install_into(driver: Driver, target_dir: PathBuf) -> Result<PathBuf> {
     let executable_path = decompress(archive_filename, archive_content, target_dir.clone())?;
 
     // Make sure the extracted file will be executable
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     {
         use std::fs;
         use std::os::unix::fs::PermissionsExt;
