@@ -3,7 +3,7 @@ use std::process::Command;
 use tempfile::tempdir;
 use webdriver_install::Driver;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 #[test]
 fn chromedriver_install_test() {
     let target_dir = tempdir().unwrap();
@@ -17,7 +17,7 @@ fn chromedriver_install_test() {
     assert!(output.status.success());
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 #[test]
 fn geckodriver_install_test() {
     let target_dir = tempdir().unwrap();
