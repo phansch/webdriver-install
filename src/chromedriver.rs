@@ -111,7 +111,7 @@ impl Version {
         #[cfg(target_os = "windows")]
         return Self::windows_version();
         #[cfg(target_os = "macos")]
-        unimplemented!();
+        return Self::mac_version();
     }
 
     /// Returns major.minor.build.patch
