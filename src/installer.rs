@@ -43,7 +43,9 @@ pub fn install_into(driver: Driver, target_dir: PathBuf) -> Result<PathBuf> {
 
     let executable_path = decompress(archive_filename, archive_content, target_dir.clone())?;
 
-    // Make sure the extracted file will be executable
+    // Make sure the extracted file will be executable.
+    //
+    // Windows doesn't need that, because all `.exe` files are automatically executable.
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     {
         use std::fs;
