@@ -94,6 +94,15 @@ static WIN_CHROME_DIRS: &[&'static str] = &["\\Google\\Chrome\\Application", "\\
 #[cfg(target_os = "windows")]
 static WIN_CHROME_ROOTS: &[&'static str] = &["LOCALAPPDATA", "PROGRAMFILES"];
 
+#[cfg(target_os = "macos")]
+static MAC_CHROME_DIRS: &[&'static str] = &[
+    "/Applications/Chromium.app",
+    "/Applications/Google Chrome.app",
+];
+#[cfg(target_os = "macos")]
+static MAC_CHROME_FILES: &[&'static str] =
+    &["Contents/MacOS/Chromium", "Contents/MacOS/Google Chrome"];
+
 impl Version {
     /// Returns the version of the currently installed Chrome/Chromium browser
     pub fn find() -> Result<Self> {
@@ -148,6 +157,20 @@ impl Version {
         Ok(Self::version_from_output(&output)?)
     }
 
+    #[cfg(target_os = "macos")]
+    fn mac_version() -> Result<Self> {
+        let output = Command::new(Location::location()?)
+            .arg("--version")
+            .stdout(Stdio::piped())
+            .output()?
+            .stdout;
+
+        let output = String::from_utf8(output)?;
+        debug!("Chrome --version output: {}", output);
+
+        Ok(Self::version_from_output(&output)?)
+    }
+
     fn version_from_output(output: &str) -> Result<Self> {
         let version_pattern = Regex::new(r"\d+\.\d+\.\d+\.\d+")?;
         let version = version_pattern
@@ -180,7 +203,7 @@ impl Location {
         #[cfg(target_os = "windows")]
         return Self::windows_location();
         #[cfg(target_os = "macos")]
-        unimplemented!();
+        return Self::mac_location();
     }
 
     #[cfg(target_os = "linux")]
@@ -202,6 +225,19 @@ impl Location {
         for dir in WIN_CHROME_DIRS.into_iter().map(PathBuf::from) {
             for root in WIN_CHROME_ROOTS.into_iter().map(PathBuf::from) {
                 let path = root.join(&dir).join("chrome.exe");
+                if path.exists() {
+                    return Ok(path);
+                }
+            }
+        }
+        Err(eyre!("Unable to find chrome executable"))
+    }
+
+    #[cfg(target_os = "macos")]
+    fn mac_location() -> Result<PathBuf> {
+        for dir in MAC_CHROME_DIRS.into_iter().map(PathBuf::from) {
+            for file in MAC_CHROME_FILES {
+                let path = dir.join(file);
                 if path.exists() {
                     return Ok(path);
                 }
