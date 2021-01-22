@@ -9,7 +9,7 @@ use std::fs::File;
 use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
-static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver", "chromedriver.exe"];
+static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver", "chromedriver.exe", "geckodriver.exe"];
 
 /// Downloads and unarchives the driver executable to $HOME/.webdrivers
 pub fn install(driver: Driver) -> Result<PathBuf> {

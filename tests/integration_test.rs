@@ -49,11 +49,8 @@ fn chromedriver_install_test_win() {
 fn geckodriver_install_test_win() {
     let target_dir = tempdir().unwrap();
     let executable_path = target_dir.path().join("geckodriver.exe");
-    webdriver_install::install_into(Driver::Gecko, target_dir.into_path()).unwrap();
 
-    let output = std::process::Command::new(executable_path)
-        .arg("--version")
-        .output()
-        .unwrap();
-    assert!(output.status.success());
+    assert!(!executable_path.exists());
+    webdriver_install::install_into(Driver::Gecko, target_dir.into_path()).unwrap();
+    assert!(executable_path.exists());
 }
