@@ -9,7 +9,7 @@ use std::fs::File;
 use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
-static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver"];
+static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver", "chromedriver.exe"];
 
 /// Downloads and unarchives the driver executable to $HOME/.webdrivers
 pub fn install(driver: Driver) -> Result<PathBuf> {
@@ -102,5 +102,5 @@ fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Resu
 
         ext => return Err(eyre!("No support for unarchiving {}, yet", ext)),
     }
-    Err(eyre!("This installer code should be unreachable!"))
+    Err(eyre!("This installer code should be unreachable! archive_filename: {}", archive_filename))
 }

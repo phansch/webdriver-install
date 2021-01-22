@@ -7,10 +7,14 @@ use regex::Regex;
 use tracing::debug;
 use url::Url;
 
+use std::process::{Command, Stdio};
+
 use crate::DriverFetcher;
 
+#[cfg(target_os = "windows")]
+use crate::run_powershell_cmd;
+
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
 
 pub struct Chromedriver;
 
@@ -90,9 +94,7 @@ static LINUX_CHROME_FILES: &[&'static str] =
     &["google-chrome", "chrome", "chromium", "chromium-browser"];
 
 #[cfg(target_os = "windows")]
-static WIN_CHROME_DIRS: &[&'static str] = &["\\Google\\Chrome\\Application", "\\Chromium\\Application"];
-#[cfg(target_os = "windows")]
-static WIN_CHROME_ROOTS: &[&'static str] = &["LOCALAPPDATA", "PROGRAMFILES"];
+static WIN_CHROME_DIRS: &[&'static str] = &["Google\\Chrome\\Application", "Chromium\\Application"];
 
 #[cfg(target_os = "macos")]
 static MAC_CHROME_DIRS: &[&'static str] = &[
@@ -144,17 +146,12 @@ impl Version {
 
     #[cfg(target_os = "windows")]
     fn windows_version() -> Result<Self> {
-        let output = Command::new("pwsh.exe")
-            .arg("--command")
-            .arg(format!("(Get-ItemProperty '{}').VersionInfo.ProductVersion", Location::location()?.display()))
-            .stdout(Stdio::piped())
-            .output()?
-            .stdout;
+        let output = run_powershell_cmd(&format!("(Get-ItemProperty '{}').VersionInfo.ProductVersion", Location::location()?.display()));
 
-        let output = String::from_utf8(output)?;
-        debug!("chrome version: {}", output);
+        let stdout = String::from_utf8(output.stdout)?;
+        debug!("chrome version: {}", stdout);
 
-        Ok(Self::version_from_output(&output)?)
+        Ok(Self::version_from_output(&stdout)?)
     }
 
     #[cfg(target_os = "macos")]
@@ -222,9 +219,18 @@ impl Location {
 
     #[cfg(target_os = "windows")]
     fn windows_location() -> Result<PathBuf> {
+        use dirs_sys::known_folder;
+
+        let roots = vec![
+            known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFiles),
+            known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFilesX86),
+            known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFilesX64),
+        ].into_iter().flatten().collect::<Vec<PathBuf>>();
         for dir in WIN_CHROME_DIRS.into_iter().map(PathBuf::from) {
-            for root in WIN_CHROME_ROOTS.into_iter().map(PathBuf::from) {
+            for root in &roots {
                 let path = root.join(&dir).join("chrome.exe");
+                debug!("root: {}", root.display());
+                debug!("checking path {}", &path.display());
                 if path.exists() {
                     return Ok(path);
                 }
