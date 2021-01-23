@@ -6,6 +6,21 @@ count](https://img.shields.io/badge/sponsors-4-brightgreen)](https://phansch.net
 
 Fast and simple webdriver installation
 
+## Usage
+
+```rust
+use webdriver_install::Driver;
+use std::path::PathBuf;
+
+fn main() {
+    // Install into $HOME/.webdrivers
+    Driver::Chrome.install();
+
+    // Install into specified path
+    Driver::Chrome.install_into(PathBuf::from("/tmp/webdrivers"));
+}
+```
+
 ## Implementation state
 
 Driver installation support:
@@ -15,16 +30,14 @@ Driver installation support:
  * ⬜ `edgedriver`
  * ⬜ `iedriver`
  * ⬜ `operadriver`
- * ⬜ `safaridriver`  
+ * ⬜ `safaridriver`
       Safaridriver comes pre-installed on all MacOS systems, but we can at least
       provide the binary location.
 
 Usability:
 
- * ⬜ README instructions  
-      Will be available once the API has settled
- * ⬜ Stable library API  
-      Current API surface is still subject to change
+ * ✅ README instructions
+ * ✅ Stable-ish library API
  * ⬜ Command line interface
  * ⬜ Updating of installed drivers
  * ⬜ Removal of installed drivers
