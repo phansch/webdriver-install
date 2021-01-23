@@ -1,0 +1,32 @@
+name: GitHub Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Release
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release -Z strip=symbols
+
+      - name: Set GIT_TAG env
+        run: echo ::set-env name=GIT_TAG::$(echo ${GITHUB_REF:10})
+      - name: Create tmp dir
+        run: mkdir /tmp/build_result
+      - name: Package Release
+        run: cd target/release && tar -czvf webdriver-install.tar.gz webdriver-install
+      - name: Copy Package
+        run: cp target/release/webdriver-install.tar.gz /tmp/build_result/webdriver-install-$GIT_TAG.tar.gz
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+        with:
+          files: /tmp/build_result/webdriver-install*.tar.gz
