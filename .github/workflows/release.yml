@@ -22,6 +22,8 @@ jobs:
       - name: Create tmp dir
         run: mkdir /tmp/build_result
       - name: Package Release
+        run: cd target/release && mv webdriver_install webdriver-install
+      - name: Package Release
         run: cd target/release && tar -czvf webdriver-install.tar.gz webdriver-install
       - name: Copy Package
         run: cp target/release/webdriver-install.tar.gz /tmp/build_result/webdriver-install-$GIT_TAG.tar.gz
