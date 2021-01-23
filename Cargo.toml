@@ -14,6 +14,7 @@ path = "src/main.rs"
 
 [dependencies]
 dirs = "*"
+dirs-sys = "*"
 eyre = "*"
 flate2 = "*"
 regex = "*"
@@ -23,6 +24,10 @@ zip = "0.5"
 tracing = "0.1"
 tracing-subscriber = "0.2"
 url = "2.2"
+
+[dependencies.winapi]
+features = ["winuser"]
+version = "0.3"
 
 [dependencies.reqwest]
 features = ["blocking"]
