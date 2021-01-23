@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Set GIT_TAG env
       run: echo "GIT_TAG=$(echo ${GITHUB_REF:10})" >> $GITHUB_ENV
+    - name: echo GIT_TAG env
+      run: echo $GIT_TAG
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
