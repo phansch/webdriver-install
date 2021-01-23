@@ -40,3 +40,4 @@ Inspired by:
 
  * [titusfortner/webdrivers](https://github.com/titusfortner/webdrivers/) which is written in Ruby.
  * `wasm-pack`'s '[internal test helpes](https://github.com/rustwasm/wasm-pack/tree/master/src/test/webdriver?rgh-link-date=2021-01-14T06%3A59%3A33Z)
+ * [bonigarcia/webdrivermanager](https://github.com/bonigarcia/webdrivermanager)
