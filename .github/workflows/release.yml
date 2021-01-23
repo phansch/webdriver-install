@@ -18,7 +18,7 @@ jobs:
           args: --release
 
       - name: Set GIT_TAG env
-        run: echo ::set-env name=GIT_TAG::$(echo ${GITHUB_REF:10})
+        run: echo "GIT_TAG=$(echo ${GITHUB_REF:10})" >> $GITHUB_ENV
       - name: Create tmp dir
         run: mkdir /tmp/build_result
       - name: Package Release
