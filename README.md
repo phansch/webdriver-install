@@ -28,8 +28,8 @@ Usability:
  * ⬜ Command line interface
  * ⬜ Updating of installed drivers
  * ⬜ Removal of installed drivers
- * ⬜ Published on crates.io
- * ⬜ Published library docs
+ * ✅ Published on crates.io
+ * ✅ Published library docs
  * ✅ Linux support
  * ✅ Windows support
  * ✅ MacOS support
