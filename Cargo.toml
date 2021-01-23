@@ -2,6 +2,8 @@
 authors = ["Philipp Hansch <dev@phansch.net>"]
 edition = "2018"
 name = "webdriver-install"
+description = "Fast and simple webdriver installation"
+license = "MIT"
 version = "0.1.0"
 
 [lib]
