@@ -13,7 +13,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release -Z strip=symbols
+          args: --release
 
       - name: Set GIT_TAG env
         run: echo ::set-env name=GIT_TAG::$(echo ${GITHUB_REF:10})
