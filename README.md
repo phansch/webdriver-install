@@ -3,6 +3,9 @@
 [![Rust](https://github.com/phansch/webdriver-install/workflows/Rust/badge.svg)](https://github.com/phansch/webdriver-install/actions)
 [![Sponsor
 count](https://img.shields.io/badge/sponsors-4-brightgreen)](https://phansch.net/thanks)
+[![Crates.io](https://img.shields.io/crates/v/webdriver-install)](https://crates.io/crates/webdriver-install)
+[![docs.rs](https://docs.rs/webdriver-install/badge.svg)](https://docs.rs/webdriver-install/)
+![MSRV](https://img.shields.io/badge/MSRV-1.44+-lightgray.svg)
 
 Fast and simple webdriver installation
 
