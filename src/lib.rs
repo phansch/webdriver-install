@@ -1,19 +1,47 @@
-pub mod chromedriver;
-pub mod geckodriver;
+//! Fast and simple webdriver installation
+//!
+//! ## Usage
+//!
+//! By default, driver executables are installed into `$HOME/.webdrivers`.
+//!
+//! ```no_run
+//! # fn main() -> eyre::Result<()> {
+//! use webdriver_install::Driver;
+//!
+//! // Install geckodriver into $HOME/.webdrivers
+//! Driver::Gecko.install()?;
+//!
+//! // Install chromedriver into $HOME/.webdrivers
+//! Driver::Chrome.install()?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! You can specify a different location with [`Driver::install_into`]:
+//!
+//! ```no_run
+//! # fn main() -> eyre::Result<()> {
+//! use webdriver_install::Driver;
+//! use std::path::PathBuf;
+//!
+//! // Install geckodriver into /tmp/webdrivers
+//! Driver::Gecko.install_into(PathBuf::from("/tmp/webdrivers"))?;
+//!
+//! // Install chromedriver into /tmp/webdrivers
+//! Driver::Chrome.install_into(PathBuf::from("/tmp/webdrivers"))?;
+//! # Ok(())
+//! # }
+//! ```
+
+mod chromedriver;
+mod geckodriver;
 pub mod installer;
 
-// Re-export these so that users don't have to type something like
-//
-//     webdriver_installer::installer::install(...)
-pub use installer::{install, install_into};
+pub use installer::Driver;
 use eyre::Result;
 use url::Url;
 
-pub enum Driver {
-    Chrome,
-    Gecko,
-}
-
+#[doc(hidden)]
 pub trait DriverFetcher {
     const BASE_URL: &'static str;
 

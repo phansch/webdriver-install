@@ -1,4 +1,4 @@
-use crate::{chromedriver::Chromedriver, geckodriver::Geckodriver, Driver, DriverFetcher};
+use crate::{chromedriver::Chromedriver, geckodriver::Geckodriver, DriverFetcher};
 use dirs::home_dir;
 use eyre::{ensure, eyre, Result};
 use flate2::read::GzDecoder;
@@ -11,50 +11,88 @@ use std::path::PathBuf;
 
 static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver", "chromedriver.exe", "geckodriver.exe"];
 
-/// Downloads and unarchives the driver executable to $HOME/.webdrivers
-pub fn install(driver: Driver) -> Result<PathBuf> {
-    let target_dir = home_dir().unwrap().join(".webdrivers");
-    std::fs::create_dir_all(&target_dir)?;
-    install_into(driver, target_dir)
+pub enum Driver {
+    Chrome,
+    Gecko,
 }
 
-/// Downloads and unarchives the driver executable into the specified `target_dir`
-pub fn install_into(driver: Driver, target_dir: PathBuf) -> Result<PathBuf> {
-    ensure!(target_dir.is_dir(), "`target_dir` must be a directory.");
-
-    let download_url = match driver {
-        Driver::Gecko => {
-            let version = Geckodriver::new().latest_version()?;
-            Geckodriver::new().direct_download_url(&version)?
-        }
-        Driver::Chrome => {
-            let version = Chromedriver::new().latest_version()?;
-            Chromedriver::new().direct_download_url(&version)?
-        }
-    };
-    let resp = reqwest::blocking::get(download_url.clone())?;
-    let archive_content = &resp.bytes()?;
-
-    let archive_filename = download_url
-        .path_segments()
-        .and_then(|s| s.last())
-        .and_then(|name| if name.is_empty() { None } else { Some(name) })
-        .unwrap_or("tmp.bin");
-
-    let executable_path = decompress(archive_filename, archive_content, target_dir.clone())?;
-
-    // Make sure the extracted file will be executable.
-    //
-    // Windows doesn't need that, because all `.exe` files are automatically executable.
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
-    {
-        use std::fs;
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(&executable_path, fs::Permissions::from_mode(0o775)).unwrap();
+impl Driver {
+    /// Downloads and unarchives the driver executable to $HOME/.webdrivers
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// # fn main() -> eyre::Result<()> {
+    /// use webdriver_install::Driver;
+    ///
+    /// // Install geckodriver
+    /// Driver::Gecko.install()?;
+    ///
+    /// // Install chromedriver
+    /// Driver::Chrome.install()?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn install(&self) -> Result<PathBuf> {
+        let target_dir = home_dir().unwrap().join(".webdrivers");
+        std::fs::create_dir_all(&target_dir)?;
+        self.install_into(target_dir)
     }
 
-    debug!("stored at {:?}", executable_path);
-    Ok(executable_path)
+    /// Downloads and unarchives the driver executable into the specified `target_dir`
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// # fn main() -> eyre::Result<()> {
+    /// use webdriver_install::Driver;
+    /// use std::path::PathBuf;
+    ///
+    /// // Install geckodriver into /tmp/webdrivers
+    /// Driver::Gecko.install_into(PathBuf::from("/tmp/webdrivers"))?;
+    ///
+    /// // Install chromedriver into /tmp/webdrivers
+    /// Driver::Chrome.install_into(PathBuf::from("/tmp/webdrivers"))?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn install_into(&self, target_dir: PathBuf) -> Result<PathBuf> {
+        ensure!(target_dir.is_dir(), "`target_dir` must be a directory.");
+
+        let download_url = match self {
+            Self::Gecko => {
+                let version = Geckodriver::new().latest_version()?;
+                Geckodriver::new().direct_download_url(&version)?
+            }
+            Self::Chrome => {
+                let version = Chromedriver::new().latest_version()?;
+                Chromedriver::new().direct_download_url(&version)?
+            }
+        };
+        let resp = reqwest::blocking::get(download_url.clone())?;
+        let archive_content = &resp.bytes()?;
+
+        let archive_filename = download_url
+            .path_segments()
+            .and_then(|s| s.last())
+            .and_then(|name| if name.is_empty() { None } else { Some(name) })
+            .unwrap_or("tmp.bin");
+
+        let executable_path = decompress(archive_filename, archive_content, target_dir.clone())?;
+
+        // Make sure the extracted file will be executable.
+        //
+        // Windows doesn't need that, because all `.exe` files are automatically executable.
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+            {
+                use std::fs;
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&executable_path, fs::Permissions::from_mode(0o775)).unwrap();
+            }
+
+            debug!("stored at {:?}", executable_path);
+            Ok(executable_path)
+    }
 }
 
 fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Result<PathBuf> {

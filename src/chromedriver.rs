@@ -117,6 +117,7 @@ impl Version {
     }
 
     /// Returns major.minor.build.patch
+    #[allow(dead_code)]
     pub fn full_version(&self) -> String {
         format!(
             "{}.{}.{}.{}",
