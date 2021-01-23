@@ -4,6 +4,10 @@ All contributors are expected to follow the [Rust Code of Conduct](https://www.r
 
 ## Releasing a new version
 
+Make sure you're logged into your cargo account:
+
+    cargo login
+
 Make sure cargo-release is installed:
 
     cargo install cargo-release
