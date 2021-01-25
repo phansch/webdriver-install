@@ -9,7 +9,12 @@ use std::fs::File;
 use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
-static DRIVER_EXECUTABLES: &[&'static str] = &["geckodriver", "chromedriver", "chromedriver.exe", "geckodriver.exe"];
+static DRIVER_EXECUTABLES: &[&'static str] = &[
+    "geckodriver",
+    "chromedriver",
+    "chromedriver.exe",
+    "geckodriver.exe",
+];
 
 pub enum Driver {
     Chrome,
@@ -58,7 +63,10 @@ impl Driver {
     /// ```
     pub fn install_into(&self, target_dir: PathBuf) -> Result<PathBuf> {
         ensure!(target_dir.exists(), "installation directory must exist.");
-        ensure!(target_dir.is_dir(), "installation location must be a directory.");
+        ensure!(
+            target_dir.is_dir(),
+            "installation location must be a directory."
+        );
 
         let download_url = match self {
             Self::Gecko => {
@@ -85,14 +93,14 @@ impl Driver {
         //
         // Windows doesn't need that, because all `.exe` files are automatically executable.
         #[cfg(any(target_os = "linux", target_os = "macos"))]
-            {
-                use std::fs;
-                use std::os::unix::fs::PermissionsExt;
-                fs::set_permissions(&executable_path, fs::Permissions::from_mode(0o775)).unwrap();
-            }
+        {
+            use std::fs;
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&executable_path, fs::Permissions::from_mode(0o775)).unwrap();
+        }
 
-            debug!("stored at {:?}", executable_path);
-            Ok(executable_path)
+        debug!("stored at {:?}", executable_path);
+        Ok(executable_path)
     }
 
     #[doc(hidden)]
@@ -108,7 +116,7 @@ impl Driver {
         match s {
             "chromedriver" => Some(Self::Chrome),
             "geckodriver" => Some(Self::Gecko),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -158,5 +166,8 @@ fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Resu
 
         ext => return Err(eyre!("No support for unarchiving {}, yet", ext)),
     }
-    Err(eyre!("This installer code should be unreachable! archive_filename: {}", archive_filename))
+    Err(eyre!(
+        "This installer code should be unreachable! archive_filename: {}",
+        archive_filename
+    ))
 }

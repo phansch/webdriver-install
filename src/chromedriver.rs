@@ -147,7 +147,10 @@ impl Version {
 
     #[cfg(target_os = "windows")]
     fn windows_version() -> Result<Self> {
-        let output = run_powershell_cmd(&format!("(Get-ItemProperty '{}').VersionInfo.ProductVersion", Location::location()?.display()));
+        let output = run_powershell_cmd(&format!(
+            "(Get-ItemProperty '{}').VersionInfo.ProductVersion",
+            Location::location()?.display()
+        ));
 
         let stdout = String::from_utf8(output.stdout)?;
         debug!("chrome version: {}", stdout);
@@ -226,7 +229,10 @@ impl Location {
             known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFiles),
             known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFilesX86),
             known_folder(&winapi::um::knownfolders::FOLDERID_ProgramFilesX64),
-        ].into_iter().flatten().collect::<Vec<PathBuf>>();
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<PathBuf>>();
         for dir in WIN_CHROME_DIRS.into_iter().map(PathBuf::from) {
             for root in &roots {
                 let path = root.join(&dir).join("chrome.exe");
