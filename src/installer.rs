@@ -57,7 +57,8 @@ impl Driver {
     /// # }
     /// ```
     pub fn install_into(&self, target_dir: PathBuf) -> Result<PathBuf> {
-        ensure!(target_dir.is_dir(), "`target_dir` must be a directory.");
+        ensure!(target_dir.exists(), "installation directory must exist.");
+        ensure!(target_dir.is_dir(), "installation location must be a directory.");
 
         let download_url = match self {
             Self::Gecko => {
@@ -92,6 +93,23 @@ impl Driver {
 
             debug!("stored at {:?}", executable_path);
             Ok(executable_path)
+    }
+
+    #[doc(hidden)]
+    pub fn as_str<'a>(&self) -> &'a str {
+        match self {
+            Self::Chrome => "chromedriver",
+            Self::Gecko => "geckodriver",
+        }
+    }
+
+    #[doc(hidden)]
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "chromedriver" => Some(Self::Chrome),
+            "geckodriver" => Some(Self::Gecko),
+            _ => None
+        }
     }
 }
 

@@ -20,6 +20,7 @@ name = "webdriver_install"
 path = "src/main.rs"
 
 [dependencies]
+clap = "2"
 dirs = "3"
 dirs-sys = "0.3"
 eyre = "0.6"
