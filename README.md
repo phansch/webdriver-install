@@ -11,6 +11,21 @@ Fast and simple webdriver installation
 
 ## Usage
 
+### As a CLI
+
+```shell
+# Install into $HOME/.webdrivers
+webdriver-install --install geckodriver
+
+# Or into a specified directory
+webdriver-install --install geckodriver --dir /tmp/webdrivers
+
+# Check that it installed correctly:
+/tmp/webdrivers/geckodriver --help
+```
+
+### As a Rust library
+
 ```rust
 use webdriver_install::Driver;
 use std::path::PathBuf;
