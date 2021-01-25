@@ -40,7 +40,9 @@ fn chromedriver_install_test_win() {
     let executable_path = target_dir.join("chromedriver.exe");
 
     assert!(!executable_path.exists());
-    Driver::Chrome.install_into(target_dir.to_path_buf()).unwrap();
+    Driver::Chrome
+        .install_into(target_dir.to_path_buf())
+        .unwrap();
     assert!(executable_path.exists());
 }
 

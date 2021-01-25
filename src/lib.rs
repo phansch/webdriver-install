@@ -37,8 +37,8 @@ mod chromedriver;
 mod geckodriver;
 pub mod installer;
 
-pub use installer::Driver;
 use eyre::Result;
+pub use installer::Driver;
 use url::Url;
 
 #[doc(hidden)]
@@ -63,8 +63,16 @@ fn run_powershell_cmd(cmd: &str) -> std::process::Output {
 
     let process = ps.args(&["-Command", cmd]).spawn().unwrap();
 
-    let output = process.wait_with_output().expect("failed to wait on child process");
-    debug!("stdout: {:?}", String::from_utf8(output.clone().stdout).unwrap());
-    debug!("stderr: {:?}", String::from_utf8(output.clone().stderr).unwrap());
+    let output = process
+        .wait_with_output()
+        .expect("failed to wait on child process");
+    debug!(
+        "stdout: {:?}",
+        String::from_utf8(output.clone().stdout).unwrap()
+    );
+    debug!(
+        "stderr: {:?}",
+        String::from_utf8(output.clone().stderr).unwrap()
+    );
     output
 }
