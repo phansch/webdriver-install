@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: uploads
-          path: target/release/webdriver-install-$GIT_TAG-linux64.tar.gz
+          path: target/release/webdriver-install*.tar.gz
 
   build-windows:
     runs-on: windows-latest
@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: uploads
-          path: target/release/webdriver-install-$GIT_TAG-win64.zip
+          path: target/release/webdriver-install*.zip
 
   build-macos:
     runs-on: macos-latest
@@ -97,4 +97,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: uploads
-          path: target/release/webdriver-install-$GIT_TAG-macos.tar.gz
+          path: target/release/webdriver-install*.tar.gz
