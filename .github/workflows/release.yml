@@ -15,19 +15,13 @@ jobs:
         with:
           name: uploads
 
-      - name: ls
-        run: ls .
-
-      - name: ls
-        run: ls uploads
-
       # Upload release
       - name: Upload release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
         with:
-          files: ./uploads/webdriver-install*
+          files: webdriver-install*
 
   build-linux:
     runs-on: ubuntu-latest
