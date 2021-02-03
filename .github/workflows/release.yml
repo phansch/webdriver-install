@@ -15,6 +15,12 @@ jobs:
         with:
           name: uploads
 
+      - name: ls
+        run: ls .
+
+      - name: ls
+        run: ls uploads
+
       # Upload release
       - name: Upload release
         uses: softprops/action-gh-release@v1
