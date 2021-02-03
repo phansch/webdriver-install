@@ -40,7 +40,7 @@ jobs:
 
       # Upload artifact
       - name: Upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: uploads
           path: target/release/webdriver-install*.tar.gz
@@ -67,7 +67,7 @@ jobs:
 
       # Upload artifact
       - name: Upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: uploads
           path: target/release/webdriver-install*.zip
