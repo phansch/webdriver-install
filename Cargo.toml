@@ -9,7 +9,7 @@ repository = "https://github.com/phansch/webdriver-install"
 documentation = "https://docs.rs/webdriver-install"
 keywords = ["webdriver", "webdriver-manager", "chromedriver", "geckodriver", "edgedriver"]
 categories = ["web-programming", "command-line-utilities", "wasm"]
-version = "0.3.2-alpha.2"
+version = "0.3.2-alpha.3"
 
 [lib]
 name = "webdriver_install"
