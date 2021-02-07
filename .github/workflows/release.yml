@@ -68,7 +68,7 @@ jobs:
       - name: Rename file
         run: cd target/release && mv webdriver_install.exe webdriver-install.exe
       - name: Create archive
-        run: cd target/release && powershell Compress-Archive webdriver-install.exe webdriver-install-$($env:GIT_TAG)-win64.zip
+        run: cd target/release && powershell Compress-Archive webdriver-install.exe "webdriver-install-${{ env.GIT_TAG }}-win64.zip"
 
       # Upload artifact
       - name: Upload artifact
