@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set GIT_TAG env
-        run: echo ("GIT_TAG=" + $env:GITHUB_REF.replace('refs/heads/', '')) >> $env:GITHUB_ENV
+        run: echo ("GIT_TAG=" + $env:GITHUB_REF.replace('refs/tags/', '')) >> $env:GITHUB_ENV
 
       # Build win64 release
       - name: Build Release
