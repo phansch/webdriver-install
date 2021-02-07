@@ -32,3 +32,22 @@ jobs:
       run: cargo test --verbose
     - name: Build all examples
       run: cargo build --examples
+
+  debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set GIT_TAG env
+        run: echo ("GIT_TAG=" + $env:GITHUB_REF.replace('refs/heads/', '')) >> $env:GITHUB_ENV
+
+      - name: Echo GIT_TAG env
+        run: |
+          echo $GIT_TAG
+
+      - name: "Echo GIT_TAG env 2"
+        run: |
+          echo "${{ env.GIT_TAG }}"
+
+      - name: "Echo GIT_TAG env 3"
+        run: |
+          echo "${{ env.GIT_TAG }}"
