@@ -30,7 +30,7 @@ sys-info = "0.9"
 tar = "0.4"
 zip = "0.5"
 tracing = "0.1"
-tracing-subscriber = "0.2"
+tracing-subscriber = "0.3"
 url = "2.2"
 
 [dependencies.winapi]
