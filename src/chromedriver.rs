@@ -57,10 +57,10 @@ impl Chromedriver {
     /// If future chromedriver releases have multiple pointer widths per platform,
     /// we have to change this to work like `Geckodriver::platform`.
     fn platform() -> Result<String> {
-        match sys_info::os_type()?.as_str() {
-            "Linux" => Ok(String::from("linux64.zip")),
-            "Darwin" => Ok(String::from("mac64.zip")),
-            "Windows" => Ok(String::from("win32.zip")),
+        match std::env::consts::OS {
+            "linux" => Ok(String::from("linux64.zip")),
+            "macos" => Ok(String::from("mac64.zip")),
+            "windows" => Ok(String::from("win32.zip")),
             other => Err(eyre!(
                 "webdriver-install doesn't support '{}' currently",
                 other

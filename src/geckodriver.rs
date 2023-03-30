@@ -32,10 +32,10 @@ impl Geckodriver {
     }
 
     fn platform() -> Result<String> {
-        match sys_info::os_type()?.as_str() {
-            "Linux" => Ok(format!("linux{}.tar.gz", Self::pointer_width())),
-            "Darwin" => Ok(String::from("macos.tar.gz")),
-            "Windows" => Ok(format!("win{}.zip", Self::pointer_width())),
+        match std::env::consts::OS {
+            "linux" => Ok(format!("linux{}.tar.gz", Self::pointer_width())),
+            "macos" => Ok(String::from("macos.tar.gz")),
+            "windows" => Ok(format!("win{}.zip", Self::pointer_width())),
             other => Err(eyre!(
                 "webdriver-install doesn't support '{}' currently",
                 other
