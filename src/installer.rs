@@ -148,10 +148,12 @@ fn decompress(archive_filename: &str, bytes: &[u8], target_dir: PathBuf) -> Resu
             let mut filename: Option<String> = None;
             for i in 0..zip.len() {
                 let mut file = zip.by_index(i)?;
-                if DRIVER_EXECUTABLES.contains(&file.name()) {
-                    filename = Some(file.name().to_string());
-                    file.read_to_end(&mut zip_bytes)?;
-                    break;
+                if let Some(file_name) = std::path::Path::new(file.name()).file_name().and_then(|n| n.to_str()){
+                    if DRIVER_EXECUTABLES.contains(&file_name) {
+                        filename = Some(file_name.to_string());
+                        file.read_to_end(&mut zip_bytes)?;
+                        break;
+                    }
                 }
             }
             if let Some(name) = filename {
