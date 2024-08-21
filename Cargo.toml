@@ -26,19 +26,19 @@ dirs-sys = "0.3"
 eyre = "0.6"
 flate2 = "1"
 regex = "1"
-sys-info = "0.9"
 tar = "0.4"
 zip = "0.5"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 url = "2.2"
+serde_json = "1.0.120"
 
 [dependencies.winapi]
 features = ["winuser"]
 version = "0.3"
 
 [dependencies.reqwest]
-features = ["blocking"]
+features = ["blocking", "json"]
 version = "0.11"
 
 [dev-dependencies]

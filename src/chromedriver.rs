@@ -4,8 +4,9 @@
 /// See https://chromedriver.chromium.org/downloads/version-selection
 use eyre::{eyre, Result};
 use regex::Regex;
-use tracing::debug;
+use tracing::{debug};
 use url::Url;
+use serde_json::Value;
 
 use std::process::{Command, Stdio};
 
@@ -19,24 +20,29 @@ use std::path::PathBuf;
 pub struct Chromedriver;
 
 impl DriverFetcher for Chromedriver {
-    const BASE_URL: &'static str = "https://chromedriver.storage.googleapis.com";
+    const BASE_URL: &'static str = "https://storage.googleapis.com/chrome-for-testing-public";
 
     /// Returns the latest version of the driver
     fn latest_version(&self) -> Result<String> {
-        let latest_release_url = format!(
-            "{}/LATEST_RELEASE_{}",
-            Self::BASE_URL,
-            Version::find()?.build_version()
-        );
-        debug!("latest_release_url: {}", latest_release_url);
-        let resp = reqwest::blocking::get(&latest_release_url)?;
-        Ok(resp.text()?)
-    }
+        const VERSION_URL: &'static str = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json";
+        let version_response = reqwest::blocking::get(VERSION_URL)?;
+        let data: Value = version_response.json()?;
+
+        // Extract the last element from the `versions` array and get the `version` field
+        if let Some(last_version) = data["versions"].as_array().and_then(|v| v.last()) {
+            if let Some(version) = last_version["version"].as_str() {
+                debug!("Latest version: {}", version);
+                return Ok(version.to_string());
+            }
+        }
+
+        Err(eyre!("Could not find the latest version"))
+}
 
     /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
         Ok(Url::parse(&format!(
-            "{}/{version}/chromedriver_{platform}",
+            "{}/{version}/{platform}/chromedriver-{platform}.zip",
             Self::BASE_URL,
             version = version,
             platform = Self::platform()?
@@ -57,10 +63,10 @@ impl Chromedriver {
     /// If future chromedriver releases have multiple pointer widths per platform,
     /// we have to change this to work like `Geckodriver::platform`.
     fn platform() -> Result<String> {
-        match sys_info::os_type()?.as_str() {
-            "Linux" => Ok(String::from("linux64.zip")),
-            "Darwin" => Ok(String::from("mac64.zip")),
-            "Windows" => Ok(String::from("win32.zip")),
+        match std::env::consts::OS {
+            "linux" => Ok(String::from("linux64")),
+            "macos" => Ok(String::from("mac64")),
+            "windows" => Ok(String::from("win32")),
             other => Err(eyre!(
                 "webdriver-install doesn't support '{}' currently",
                 other
@@ -298,7 +304,7 @@ fn version_from_output_panic_not_4_parts_test() {
 fn direct_download_url_test() {
     #[cfg(target_os = "linux")]
     assert_eq!(
-        "https://chromedriver.storage.googleapis.com/v1/chromedriver_linux64.zip",
+        "https://storage.googleapis.com/chrome-for-testing-public/v1/linux64/chromedriver-linux64.zip",
         Chromedriver::new()
             .direct_download_url("v1")
             .unwrap()
@@ -306,7 +312,7 @@ fn direct_download_url_test() {
     );
     #[cfg(target_os = "macos")]
     assert_eq!(
-        "https://chromedriver.storage.googleapis.com/v1/chromedriver_mac64.zip",
+        "https://storage.googleapis.com/chrome-for-testing-public/v1/mac64/chromedriver-mac64.zip",
         Chromedriver::new()
             .direct_download_url("v1")
             .unwrap()
@@ -314,7 +320,7 @@ fn direct_download_url_test() {
     );
     #[cfg(target_os = "windows")]
     assert_eq!(
-        "https://chromedriver.storage.googleapis.com/v1/chromedriver_win32.zip",
+        "https://storage.googleapis.com/chrome-for-testing-public/v1/win32/chromedriver-win32.zip",
         Chromedriver::new()
             .direct_download_url("v1")
             .unwrap()
