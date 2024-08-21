@@ -37,7 +37,7 @@ impl DriverFetcher for Chromedriver {
         }
 
         Err(eyre!("Could not find the latest version"))
-}
+    }
 
     /// Returns the download url for the driver executable
     fn direct_download_url(&self, version: &str) -> Result<Url> {
@@ -65,7 +65,7 @@ impl Chromedriver {
     fn platform() -> Result<String> {
         match std::env::consts::OS {
             "linux" => Ok(String::from("linux64")),
-            "macos" => Ok(String::from("mac64")),
+            "macos" => Ok(String::from("mac-x64")),
             "windows" => Ok(String::from("win32")),
             other => Err(eyre!(
                 "webdriver-install doesn't support '{}' currently",
@@ -312,7 +312,7 @@ fn direct_download_url_test() {
     );
     #[cfg(target_os = "macos")]
     assert_eq!(
-        "https://storage.googleapis.com/chrome-for-testing-public/v1/mac64/chromedriver-mac64.zip",
+        "https://storage.googleapis.com/chrome-for-testing-public/v1/mac-x64/chromedriver-mac-x64.zip",
         Chromedriver::new()
             .direct_download_url("v1")
             .unwrap()
