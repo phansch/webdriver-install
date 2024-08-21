@@ -21,7 +21,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "2"
-dirs = "4"
+dirs = "5"
 dirs-sys = "0.3"
 eyre = "0.6"
 flate2 = "1"
