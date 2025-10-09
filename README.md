@@ -7,6 +7,10 @@ count](https://img.shields.io/badge/sponsors-4-brightgreen)](https://phansch.net
 [![docs.rs](https://docs.rs/webdriver-install/badge.svg)](https://docs.rs/webdriver-install/)
 ![MSRV](https://img.shields.io/badge/MSRV-1.44+-lightgray.svg)
 
+This project has been archived and is no longer maintained. See https://github.com/phansch/webdriver-install/issues/64
+
+---
+
 Fast and simple webdriver installation
 
 ## Usage
